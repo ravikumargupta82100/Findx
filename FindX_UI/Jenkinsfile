@@ -3,12 +3,10 @@ pipeline {
     tools { nodejs 'NodeJS-20' }
 
     stages {
-        // No Checkout stage needed — SCM already pulled the code
-
         stage('Install Dependencies') {
             steps {
                 dir('FindX_UI') {
-                    sh 'npm ci'
+                    bat 'npm ci'
                 }
             }
         }
@@ -16,7 +14,7 @@ pipeline {
         stage('Build') {
             steps {
                 dir('FindX_UI') {
-                    sh 'npm run build'
+                    bat 'npm run build'
                 }
             }
         }
@@ -24,9 +22,10 @@ pipeline {
         stage('Deploy / Run') {
             steps {
                 dir('FindX_UI') {
-                    sh '''
-                        rm -rf /var/www/findx_ui/*
-                        cp -r build/* /var/www/findx_ui/
+                    bat '''
+                        rmdir /S /Q C:\\deploy\\findx_ui
+                        mkdir C:\\deploy\\findx_ui
+                        xcopy /E /I /Y build C:\\deploy\\findx_ui
                     '''
                 }
             }
