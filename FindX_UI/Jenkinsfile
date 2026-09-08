@@ -23,9 +23,9 @@ pipeline {
             steps {
                 dir('FindX_UI') {
                     bat '''
-                        rmdir /S /Q C:\\deploy\\findx_ui
+                        if exist C:\\deploy\\findx_ui rmdir /S /Q C:\\deploy\\findx_ui
                         mkdir C:\\deploy\\findx_ui
-                        xcopy /E /I /Y build C:\\deploy\\findx_ui
+                        xcopy /E /I /Y dist C:\\deploy\\findx_ui
                     '''
                 }
             }
