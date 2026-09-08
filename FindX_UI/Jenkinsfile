@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+    tools { nodejs 'NodeJS-20' }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/ravikumargupta82100/Findx.git'
+                // if private repo, add: credentialsId: 'github-creds'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                dir('FindX_UI') {
+                    sh 'npm ci'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir('FindX_UI') {
+                    sh 'npm run build'
+                }
+            }
+        }
+
+        stage('Deploy / Run') {
+            steps {
+                dir('FindX_UI') {
+                    sh '''
+                        rm -rf /var/www/findx_ui/*
+                        cp -r build/* /var/www/findx_ui/
+                    '''
+                }
+            }
+        }
+    }
+}
