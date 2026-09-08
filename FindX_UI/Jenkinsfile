@@ -1,40 +1,55 @@
 pipeline {
     agent any
-    tools { nodejs 'NodeJS-20' }
+
+    tools {
+        nodejs 'NodeJS-20'   // must match the name you gave in Manage Jenkins > Tools
+    }
+
+    environment {
+        APP_NAME = 'findx_ui'
+        DEPLOY_DIR = '/var/www/findx_ui'   // change to wherever you want to serve it from
+    }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/ravikumargupta82100/Findx.git'
-                // if private repo, add: credentialsId: 'github-creds'
+                git branch: 'main',
+                    url: 'https://github.com/Findx/findx_ui.git'
+                // if the repo is private, use credentialsId:
+                // git branch: 'main', credentialsId: 'github-creds', url: 'https://github.com/Findx/findx_ui.git'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                dir('FindX_UI') {
-                    sh 'npm ci'
-                }
+                sh 'npm ci'
             }
         }
 
         stage('Build') {
             steps {
-                dir('FindX_UI') {
-                    sh 'npm run build'
-                }
+                sh 'npm run build'
             }
         }
 
         stage('Deploy / Run') {
             steps {
-                dir('FindX_UI') {
-                    sh '''
-                        rm -rf /var/www/findx_ui/*
-                        cp -r build/* /var/www/findx_ui/
-                    '''
-                }
+                sh '''
+                    rm -rf ${DEPLOY_DIR}/*
+                    cp -r build/* ${DEPLOY_DIR}/
+                '''
+                // if using pm2 to serve instead of nginx/static hosting:
+                // sh 'pm2 restart findx_ui || pm2 start npm --name findx_ui -- start'
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build and deploy succeeded ✅'
+        }
+        failure {
+            echo 'Build failed ❌'
         }
     }
 }
