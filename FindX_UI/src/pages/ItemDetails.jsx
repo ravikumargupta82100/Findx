@@ -12,8 +12,28 @@ import SearchIcon from "@mui/icons-material/Search";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ChatIcon from "@mui/icons-material/Chat";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getItemDetails } from "../Apis/ItemApi";
 
 function ItemDetails() {
+  const[itemdetails,setItemdetails]=useState();
+const {id}=useParams();
+useEffect(()=>{
+
+  getItemDetails(id).then((item)=>
+  {
+    console.log("API DATA:", item.data);
+  setItemdetails(item.data)
+  }
+  ).catch((er)=>
+  {
+  console.log("Getting error while getting error");
+  }
+  );
+
+},[id]);
+
   return (
     <Box
       sx={{
@@ -74,12 +94,16 @@ function ItemDetails() {
               justifyContent: "center",
             }}
           >
-            <SearchIcon
-              sx={{
-                fontSize: 100,
-                color: "#0B5CFF",
-              }}
-            />
+             <img
+  src={itemdetails?.itemImage}
+  alt={itemdetails?.itemName}
+  style={{
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    borderRadius: "2px",
+  }}
+/>
           </Box>
 
           {/* Details */}
@@ -115,7 +139,7 @@ function ItemDetails() {
                 color: "#071B3A",
               }}
             >
-              iPhone 15
+            {itemdetails?.itemName}
             </Typography>
 
             <Typography
@@ -124,7 +148,7 @@ function ItemDetails() {
                 color: "#5B6B84",
               }}
             >
-              Black iPhone with a transparent case
+             {itemdetails?.category}
             </Typography>
 
             <Divider sx={{ marginY: 3 }} />
@@ -157,7 +181,7 @@ function ItemDetails() {
                       color: "#071B3A",
                     }}
                   >
-                    Bangalore Metro Station
+                  {itemdetails?.location}
                   </Typography>
                 </Box>
               </Stack>
@@ -214,9 +238,7 @@ function ItemDetails() {
                 color: "#5B6B84",
               }}
             >
-              Black iPhone 15 with a transparent case.
-              There is a small scratch near the bottom-right
-              corner of the phone.
+              {itemdetails?.description}
             </Typography>
 
             {/* AI Match */}

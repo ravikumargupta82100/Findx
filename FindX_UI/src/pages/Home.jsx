@@ -11,8 +11,11 @@ import SearchIcon from "@mui/icons-material/Search";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutlineOutlined"
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
+const Navigate=useNavigate();
+   
   return (
     <Box
       sx={{
@@ -164,7 +167,7 @@ function Home() {
                     borderRadius: 2,
                     paddingX: 3,
                   }}
-                >
+               onClick={()=>Navigate("/report-lost")} >
                   Report Lost Item
                 </Button>
 
@@ -224,7 +227,7 @@ function Home() {
                     borderRadius: 2,
                     paddingX: 3,
                   }}
-                >
+                 onClick={()=>Navigate("/report-found")} >
                   Report Found Item
                 </Button>
 

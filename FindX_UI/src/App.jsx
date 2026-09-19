@@ -37,7 +37,7 @@ function App() {
 
           <Route path="/report-found" element={<ReportFound />} />
 
-          <Route path="/item-details" element={<ItemDetails />} />
+          <Route path="/item-details/:id" element={<ItemDetails />} />
 
           <Route path="/match-details" element={<MatchDetails />} />
 

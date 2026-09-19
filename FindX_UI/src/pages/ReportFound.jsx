@@ -6,12 +6,74 @@ import {
   TextField,
   Typography,
   MenuItem,
+  Alert,
+  Snackbar
 } from "@mui/material";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SearchIcon from "@mui/icons-material/Search";
+import { useState } from "react";
+import { saveItemDetails } from "../Apis/ItemApi";
 
 function ReportFound() {
+  const [message, setMessage] = useState("");
+const [messageType, setMessageType] = useState("success");
+const [openMessage, setOpenMessage] = useState(false);
+const [formData, setFormData] = useState({
+  itemName: "",
+  category: "",
+  description: "",
+  location: "",
+  lostFoundDateTime: "",
+  itemImage: "",
+  status:""
+});
+const handleSubmit = () => {
+
+    if (
+    !formData.itemName ||
+    !formData.category ||
+    !formData.description ||
+    !formData.location ||
+    !formData.lostFoundDateTime
+  ) {
+    setMessage("Please fill all required fields.");
+    setMessageType("error");
+    setOpenMessage(true);
+    return;
+  }
+  const payload = {
+    ...formData,
+    status: "FOUND",
+  };
+
+  saveItemDetails(payload)
+    .then((response) => {
+      console.log("Item created successfully:", response.data);
+
+      setMessage("Found item reported successfully!");
+      setMessageType("success");
+      setOpenMessage(true);
+
+      // optional: clear form
+      setFormData({
+        itemName: "",
+        category: "",
+        description: "",
+        location: "",
+        lostFoundDateTime: "",
+        itemImage: "",
+      });
+    })
+    .catch((error) => {
+      console.error("Error creating item:", error);
+
+      setMessage("Failed to report item. Please try again.");
+      setMessageType("error");
+      setOpenMessage(true);
+    });
+};
+
   return (
     <Box
       sx={{
@@ -99,25 +161,30 @@ function ReportFound() {
               label="Item Name"
               placeholder="Example: Black iPhone 15"
               fullWidth
-            />
+              required
+              value={formData.itemName}
+           onChange={(e)=>setFormData({...formData,itemName:e.target.value})}
+           />
 
-            {/* Category */}
-            <TextField
-              select
-              label="Category"
-              defaultValue=""
-              fullWidth
-            >
-              <MenuItem value="mobile">Mobile</MenuItem>
-              <MenuItem value="laptop">Laptop</MenuItem>
-              <MenuItem value="bag">Bag</MenuItem>
-              <MenuItem value="wallet">Wallet</MenuItem>
-              <MenuItem value="keys">Keys</MenuItem>
-              <MenuItem value="documents">Documents</MenuItem>
-              <MenuItem value="books">Books</MenuItem>
-              <MenuItem value="clothing">Clothing</MenuItem>
-              <MenuItem value="other">Other</MenuItem>
-            </TextField>
+           {/* Category */}
+<TextField
+  select
+  label="Category"
+  fullWidth
+  required
+  value={formData.category || ""}
+  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+>
+  <MenuItem value="mobile">Mobile</MenuItem>
+  <MenuItem value="laptop">Laptop</MenuItem>
+  <MenuItem value="bag">Bag</MenuItem>
+  <MenuItem value="wallet">Wallet</MenuItem>
+  <MenuItem value="keys">Keys</MenuItem>
+  <MenuItem value="documents">Documents</MenuItem>
+  <MenuItem value="books">Books</MenuItem>
+  <MenuItem value="clothing">Clothing</MenuItem>
+  <MenuItem value="other">Other</MenuItem>
+</TextField>
 
             {/* Description */}
             <TextField
@@ -126,6 +193,9 @@ function ReportFound() {
               multiline
               rows={4}
               fullWidth
+              required
+                 value={formData.description}
+           onChange={(e)=>setFormData({...formData,description:e.target.value})}
             />
 
             {/* Found Location */}
@@ -133,17 +203,28 @@ function ReportFound() {
               label="Found Location"
               placeholder="Example: Bangalore Metro Station"
               fullWidth
+              required
+                          value={formData.location}
+           onChange={(e)=>setFormData({...formData,location:e.target.value})}
             />
 
-            {/* Found Date */}
-            <TextField
-              label="Found Date"
-              type="date"
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
+       {/* Found Date & Time */}
+<TextField
+  label="Found Date & Time"
+  type="datetime-local"
+  fullWidth
+  required
+  InputLabelProps={{
+    shrink: true,
+  }}
+  value={formData.lostFoundDateTime}
+  onChange={(e) =>
+    setFormData({
+      ...formData,
+      lostFoundDateTime: e.target.value,
+    })
+  }
+/>
 
             {/* Image */}
             <Box>
@@ -203,13 +284,32 @@ function ReportFound() {
                 textTransform: "none",
                 fontSize: "16px",
               }}
+
+              onClick={handleSubmit}
             >
               Report Found Item
             </Button>
 
           </Stack>
         </Box>
-
+<Snackbar
+  open={openMessage}
+  autoHideDuration={3000}
+  onClose={() => setOpenMessage(false)}
+  anchorOrigin={{
+    vertical: "top",
+    horizontal: "center",
+  }}
+>
+  <Alert
+    onClose={() => setOpenMessage(false)}
+    severity={messageType}
+    variant="filled"
+    sx={{ width: "100%" }}
+  >
+    {message}
+  </Alert>
+</Snackbar>
       </Container>
     </Box>
   );

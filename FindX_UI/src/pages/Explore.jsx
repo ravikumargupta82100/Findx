@@ -7,13 +7,34 @@ import {
   Stack,
   TextField,
   Typography,
+  Card,
+  CardContent
 } from "@mui/material";
+import { getAllItemsList } from "../Apis/ItemApi";
+import { useNavigate } from "react-router-dom";
+
+
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
+import { useEffect, useState } from "react";
+
 
 function Explore() {
+const [items,setItems]=useState([]);
+const navigates=useNavigate();
+
+  useEffect(() => {
+  getAllItemsList()
+    .then((response) => {
+      console.log("API DATA:", response.data);
+      setItems(response.data);
+    })
+    .catch((error) => {
+      console.log("Error fetching items:", error);
+    });
+}, []);
   return (
     <Box
       sx={{
@@ -211,263 +232,71 @@ function Explore() {
 
         <Grid container spacing={3} sx={{ marginTop: 1 }}>
 
-          {/* Card 1 */}
-          <Grid item xs={12} md={4}>
-            <Box
-              sx={{
-                backgroundColor: "white",
-                borderRadius: 3,
-                overflow: "hidden",
-                boxShadow: "0 5px 20px rgba(0,0,0,0.06)",
-              }}
-            >
-              <Box
-                sx={{
-                  height: 160,
-                  backgroundColor: "#EAF2FF",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <SearchIcon
-                  sx={{
-                    fontSize: 60,
-                    color: "#0B5CFF",
-                  }}
-                />
-              </Box>
 
-              <Box sx={{ padding: 3 }}>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#071B3A",
-                  }}
-                >
-                  iPhone 15
-                </Typography>
+{/* Item map*/}
+{items.map((item) => (
+  <Card key={item.id} sx={{ mb: 2 }}>
+    <CardContent>
+      <Box
+        sx={{
+          height: 150,
+          backgroundColor: "#EAF2FF",
+          borderRadius: 2,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          mb: 2,
+        }}
+      >
+      <img
+  src={item.itemImage}
+  alt={item.itemName}
+  style={{
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    borderRadius: "8px",
+  }}
+/>
+      </Box>
 
-                <Typography
-                  sx={{
-                    color: "#5B6B84",
-                    marginTop: 1,
-                  }}
-                >
-                  Black iPhone with transparent case
-                </Typography>
+      <Typography variant="h6" fontWeight={600}>
+        {item.itemName}
+      </Typography>
 
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  alignItems="center"
-                  sx={{ marginTop: 2 }}
-                >
-                  <LocationOnOutlinedIcon
-                    sx={{
-                      color: "#0B5CFF",
-                      fontSize: 20,
-                    }}
-                  />
+      <Typography color="text.secondary">
+        {item.category}
+      </Typography>
 
-                  <Typography
-                    sx={{
-                      fontSize: 14,
-                      color: "#5B6B84",
-                    }}
-                  >
-                    Bangalore
-                  </Typography>
-                </Stack>
+      <Typography color="text.secondary" sx={{ mt: 1 }}>
+        📍 {item.location}
+      </Typography>
 
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  sx={{
-                    marginTop: 2,
-                    textTransform: "none",
-                    borderColor: "#0B5CFF",
-                    color: "#0B5CFF",
-                  }}
-                >
-                  View Details
-                </Button>
-              </Box>
-            </Box>
-          </Grid>
+      <Typography
+        sx={{
+          mt: 1,
+          fontSize: 13,
+          fontWeight: 600,
+          color: item.status === "LOST" ? "#DC2626" : "#16A34A",
+        }}
+      >
+        {item.status}
+      </Typography>
 
-          {/* Card 2 */}
-          <Grid item xs={12} md={4}>
-            <Box
-              sx={{
-                backgroundColor: "white",
-                borderRadius: 3,
-                overflow: "hidden",
-                boxShadow: "0 5px 20px rgba(0,0,0,0.06)",
-              }}
-            >
-              <Box
-                sx={{
-                  height: 160,
-                  backgroundColor: "#EAF2FF",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <SearchIcon
-                  sx={{
-                    fontSize: 60,
-                    color: "#0B5CFF",
-                  }}
-                />
-              </Box>
+      <Button
+        variant="outlined"
+        fullWidth
+        sx={{ mt: 2 }}
+      onClick={()=>navigates(`/item-details/${item.id}`)}
+      >
+        View Details
+      </Button>
+    </CardContent>
+  </Card>
+))}
+         
 
-              <Box sx={{ padding: 3 }}>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#071B3A",
-                  }}
-                >
-                  Black Wallet
-                </Typography>
-
-                <Typography
-                  sx={{
-                    color: "#5B6B84",
-                    marginTop: 1,
-                  }}
-                >
-                  Leather wallet found near a metro station
-                </Typography>
-
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  alignItems="center"
-                  sx={{ marginTop: 2 }}
-                >
-                  <LocationOnOutlinedIcon
-                    sx={{
-                      color: "#0B5CFF",
-                      fontSize: 20,
-                    }}
-                  />
-
-                  <Typography
-                    sx={{
-                      fontSize: 14,
-                      color: "#5B6B84",
-                    }}
-                  >
-                    Bangalore
-                  </Typography>
-                </Stack>
-
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  sx={{
-                    marginTop: 2,
-                    textTransform: "none",
-                    borderColor: "#0B5CFF",
-                    color: "#0B5CFF",
-                  }}
-                >
-                  View Details
-                </Button>
-              </Box>
-            </Box>
-          </Grid>
-
-          {/* Card 3 */}
-          <Grid item xs={12} md={4}>
-            <Box
-              sx={{
-                backgroundColor: "white",
-                borderRadius: 3,
-                overflow: "hidden",
-                boxShadow: "0 5px 20px rgba(0,0,0,0.06)",
-              }}
-            >
-              <Box
-                sx={{
-                  height: 160,
-                  backgroundColor: "#EAF2FF",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <SearchIcon
-                  sx={{
-                    fontSize: 60,
-                    color: "#0B5CFF",
-                  }}
-                />
-              </Box>
-
-              <Box sx={{ padding: 3 }}>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#071B3A",
-                  }}
-                >
-                  Laptop Bag
-                </Typography>
-
-                <Typography
-                  sx={{
-                    color: "#5B6B84",
-                    marginTop: 1,
-                  }}
-                >
-                  Blue laptop bag reported as lost
-                </Typography>
-
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  alignItems="center"
-                  sx={{ marginTop: 2 }}
-                >
-                  <LocationOnOutlinedIcon
-                    sx={{
-                      color: "#0B5CFF",
-                      fontSize: 20,
-                    }}
-                  />
-
-                  <Typography
-                    sx={{
-                      fontSize: 14,
-                      color: "#5B6B84",
-                    }}
-                  >
-                    Bangalore
-                  </Typography>
-                </Stack>
-
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  sx={{
-                    marginTop: 2,
-                    textTransform: "none",
-                    borderColor: "#0B5CFF",
-                    color: "#0B5CFF",
-                  }}
-                >
-                  View Details
-                </Button>
-              </Box>
-            </Box>
-          </Grid>
+        
 
         </Grid>
 

@@ -5,6 +5,7 @@ import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import KeyIcon from "@mui/icons-material/Key";
 import { useNavigate } from "react-router-dom";
 
+
 function Welcome() {
     const navigate=useNavigate();
   return (
@@ -147,6 +148,7 @@ function Welcome() {
                 <Typography fontSize="14px">
                   AI Matching
                 </Typography>
+               
               </Stack>
             </Stack>
           </Box>
