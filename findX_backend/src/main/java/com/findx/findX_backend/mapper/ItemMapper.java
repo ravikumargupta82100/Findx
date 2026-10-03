@@ -24,4 +24,17 @@ public class ItemMapper {
 		return newItem;
 	}
 
+	public ItemEntity toUpdateItem(ItemEntity items, ItemRequestDto itemRequestDto) {
+
+		items.setCategory(itemRequestDto.getCategory());
+		items.setDescription(itemRequestDto.getDescription());
+		items.setItemImage(itemRequestDto.getItemImage());
+		items.setItemName(itemRequestDto.getItemName());
+		items.setLostFoundDateTime(itemRequestDto.getLostFoundDateTime());
+		items.setStatus(itemRequestDto.getStatus());
+		items.setLocation(itemRequestDto.getLocation());
+
+		return items;
+	}
+
 }
