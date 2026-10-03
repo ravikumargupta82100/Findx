@@ -62,6 +62,10 @@ function MainLayout() {
   ];
 
   const handleLogout = () => {
+     localStorage.removeItem("token");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("fullName");
+  localStorage.removeItem("email");
     navigate("/");
   };
 

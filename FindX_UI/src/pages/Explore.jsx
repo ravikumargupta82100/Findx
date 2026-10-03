@@ -19,14 +19,31 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SearchIcon from "@mui/icons-material/Search";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import { useEffect, useState } from "react";
+import { exploreItems } from "../Apis/ItemApi";
 
 
 function Explore() {
 const [items,setItems]=useState([]);
+const[selectItems,setSelectedItems]=useState("");
+const [searchItem,setSearchItem]=useState({
+status:"",
+category:"",
+location:""
+
+})
 const navigates=useNavigate();
 
+const handleClick = () => 
+  { console.log("Search filters:", searchItem);
+     exploreItems(searchItem) 
+     .then((response) =>
+       { console.log("SEARCH RESULT:", response.data); 
+        setItems(response.data); }) 
+        .catch((error) =>
+           { console.log("Search error:", error); }); };
+
   useEffect(() => {
-  getAllItemsList()
+  exploreItems(searchItem)
     .then((response) => {
       console.log("API DATA:", response.data);
       setItems(response.data);
@@ -35,6 +52,14 @@ const navigates=useNavigate();
       console.log("Error fetching items:", error);
     });
 }, []);
+
+const filterItems=items.filter((res)=>{
+
+  if(selectItems==="")
+    return true;
+
+ return res.status===selectItems;
+})
   return (
     <Box
       sx={{
@@ -122,6 +147,10 @@ const navigates=useNavigate();
                     />
                   ),
                 }}
+value={searchItem.status}
+onChange={(e)=>setSearchItem({...searchItem,
+  status:e.target.value}
+)}
               />
             </Grid>
 
@@ -131,6 +160,12 @@ const navigates=useNavigate();
                 fullWidth
                 label="Category"
                 defaultValue="all"
+
+                value={searchItem.category}
+                onChange={(e)=>setSearchItem({
+                  ...searchItem,
+                  category:e.target.value
+                })}
               >
                 <MenuItem value="all">All Categories</MenuItem>
                 <MenuItem value="mobile">Mobile</MenuItem>
@@ -141,6 +176,8 @@ const navigates=useNavigate();
                 <MenuItem value="documents">Documents</MenuItem>
                 <MenuItem value="books">Books</MenuItem>
                 <MenuItem value="other">Other</MenuItem>
+
+              
               </TextField>
             </Grid>
 
@@ -158,6 +195,11 @@ const navigates=useNavigate();
                     />
                   ),
                 }}
+                value={searchItem.location}
+                onChange={(e)=>setSearchItem({
+                  ...searchItem,
+                  location:e.target.value
+                })}
               />
             </Grid>
 
@@ -172,6 +214,7 @@ const navigates=useNavigate();
                   textTransform: "none",
                   fontWeight: "bold",
                 }}
+                onClick={handleClick}
               >
                 Search
               </Button>
@@ -180,43 +223,48 @@ const navigates=useNavigate();
           </Grid>
         </Box>
 
-        {/* Filter */}
-        <Stack
-          direction="row"
-          spacing={2}
-          sx={{ marginTop: 4 }}
-        >
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "#0B5CFF",
-              textTransform: "none",
-              borderRadius: 5,
-            }}
-          >
-            All
-          </Button>
+      
+{/* Filter Buttons */}
+<Stack
+  direction="row"
+  spacing={2}
+  sx={{ marginTop: 4 }}
+>
+  <Button
+    variant={selectItems === "" ? "contained" : "outlined"}
+    sx={{
+      backgroundColor: selectItems === "" ? "#0B5CFF" : "transparent",
+      borderRadius: 5,
+      textTransform: "none",
+    }}
+    onClick={() => setSelectedItems("")}
+  >
+    All
+  </Button>
 
-          <Button
-            variant="outlined"
-            sx={{
-              textTransform: "none",
-              borderRadius: 5,
-            }}
-          >
-            Lost
-          </Button>
+  <Button
+    variant={selectItems === "LOST" ? "contained" : "outlined"}
+    sx={{
+      borderRadius: 5,
+      textTransform: "none",
+    }}
+    onClick={() => setSelectedItems("LOST")}
+  >
+    Lost
+  </Button>
 
-          <Button
-            variant="outlined"
-            sx={{
-              textTransform: "none",
-              borderRadius: 5,
-            }}
-          >
-            Found
-          </Button>
-        </Stack>
+  <Button
+    variant={selectItems === "FOUND" ? "contained" : "outlined"}
+    sx={{
+      borderRadius: 5,
+      textTransform: "none",
+    }}
+    onClick={() => setSelectedItems("FOUND")}
+  >
+    Found
+  </Button>
+</Stack>
+
 
         {/* Results */}
         <Typography
@@ -234,7 +282,7 @@ const navigates=useNavigate();
 
 
 {/* Item map*/}
-{items.map((item) => (
+{filterItems.map((item) => (
   <Card key={item.id} sx={{ mb: 2 }}>
     <CardContent>
       <Box

@@ -6,12 +6,44 @@ import {
   Stack,
   TextField,
   Typography,
+  Snackbar,
+  Alert
 } from "@mui/material";
 
 import SearchIcon from "@mui/icons-material/Search";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { userLogin } from "../Apis/UserDetailsApi";
 
 function Login() {
+    const navigates=useNavigate();
+    const[message,setMessage]=useState("");
+     const[openMessage,setOpenMessage]=useState(false);
+     const[messageType,setMessageType]=useState("success");
+const[userDetails,setUserDetails]=useState({
+  email:"",
+  password:""
+});
+const handleSubmit=()=>{
+userLogin(userDetails).then((res)=>{
+
+localStorage.setItem("token",res.data.token);
+localStorage.setItem("fullname",res.data.fullname)
+localStorage.setItem("email",res.data.email);
+localStorage.setItem("id",res.data.userId);
+  console.log(res.data);
+
+  navigates("/home");
+
+})
+.catch((err)=>{
+console.log("Login failed with error"+err.response.data.message)
+
+})
+
+}
+
   return (
     <Box
       sx={{
@@ -81,6 +113,12 @@ function Login() {
               label="Email or Phone Number"
               placeholder="Enter email or phone"
               fullWidth
+              required
+              value={userDetails.email}
+              onChange={(e)=>setUserDetails({
+                ...userDetails,
+                email:e.target.value
+              })}
             />
 
             <TextField
@@ -88,6 +126,12 @@ function Login() {
               placeholder="Enter password"
               type="password"
               fullWidth
+              required
+                  value={userDetails.password}
+              onChange={(e)=>setUserDetails({
+                ...userDetails,
+                password:e.target.value
+              })}
             />
 
             <Typography
@@ -112,6 +156,7 @@ function Login() {
                 fontWeight: "bold",
                 textTransform: "none",
               }}
+              onClick={handleSubmit}
             >
               Login
             </Button>
@@ -147,6 +192,7 @@ function Login() {
                   fontWeight: "bold",
                   cursor: "pointer",
                 }}
+                onClick={()=>navigates("/register")}
               >
                 Register
               </span>
